@@ -21,5 +21,15 @@ df2 = df1.drop(['area_type', 'society', 'balcony', 'availability'], axis='column
 # filling all the NAN bathrooms with the median
 df2['bath'].fillna((df2['bath'].mean()), inplace=True)
 # dropping other NAN values
-df3 = df2.isnull()
+df3 = df2.dropna()
 print(df3.isnull().sum())
+
+print(df3.head())
+
+# converting different types of rooms into one
+try:
+    df3['room number'] = df3['size'].apply(lambda x: int(x.split(' ')[0]))
+except:
+    pass
+
+print(df3.head())
