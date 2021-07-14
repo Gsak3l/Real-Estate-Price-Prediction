@@ -33,3 +33,5 @@ except:
     pass
 
 print(df3.head())
+
+print(df2.dropna())
