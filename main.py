@@ -3,35 +3,53 @@ import matplotlib.pyplot as plt
 import numpy as np
 import matplotlib
 
-matplotlib.rcParams['figure.figsize'] = (20, 10)
 
-# getting to know the dataframe a bit more
-df1 = pd.read_csv('./data/Bengaluru_House_Data.csv')
+def clean_dataframe(df_1):
+    df_2 = df_1.drop(['area_type', 'society', 'balcony', 'availability'], axis='columns')
 
-# print(df1.shape)
-# print(df1.head())
-# print(df1.groupby('area_type').agg('count'))
+    print(df_2.head())
+    print(df_2.isnull().sum())
+    print(df_2.isna().sum())
 
-df2 = df1.drop(['area_type', 'society', 'balcony', 'availability'], axis='columns')
+    # filling all the NAN bathrooms with the median
+    df_2['bath'].fillna((df_2['bath'].mean()), inplace=True)
+    # dropping other NAN values
+    ddf3 = df_2.dropna()
 
-# print(df2.head())
-# print(df2.isnull().sum())
-# print(df2.isna().sum())
+    print(ddf3.isnull().sum())
+    print(ddf3.head())
 
-# filling all the NAN bathrooms with the median
-df2['bath'].fillna((df2['bath'].mean()), inplace=True)
-# dropping other NAN values
-df3 = df2.dropna()
-print(df3.isnull().sum())
+    return ddf3
 
-print(df3.head())
 
-# converting different types of rooms into one
-try:
-    df3['room number'] = df3['size'].apply(lambda x: int(x.split(' ')[0]))
-except:
-    pass
+def is_float(x):
+    try:
+        float(x)
+    except:
+        return False
+    return True
 
-print(df3.head())
 
-print(df2.dropna())
+if __name__ == '__main__':
+    matplotlib.rcParams['figure.figsize'] = (20, 10)
+
+    # getting to know the dataframe a bit more
+    df1 = pd.read_csv('./data/Bengaluru_House_Data.csv')
+    print(df1.shape)
+    print(df1.head())
+    print(df1.groupby('area_type').agg('count'))
+
+    df3 = clean_dataframe(df1)
+
+    # converting different types of rooms into one
+    print('nob: number of bedrooms')
+    try:
+        df3['nob'] = df3['size'].apply(lambda x: int(x.split(' ')[0]))
+    except:
+        pass
+
+    print(df3['nob'].unique())
+    # there is at least an error with the number of rooms here, considering the square feet
+    print(df3[df3.nob > 20])
+
+    print(df3.total_sqft.unique())
