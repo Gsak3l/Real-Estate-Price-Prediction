@@ -14,12 +14,12 @@ def clean_dataframe(df_1):
     # filling all the NAN bathrooms with the median
     df_2['bath'].fillna((df_2['bath'].mean()), inplace=True)
     # dropping other NAN values
-    ddf3 = df_2.dropna()
+    df_3 = df_2.dropna()
 
-    # print(ddf3.isnull().sum())
-    # print(ddf3.head())
+    # print(df_3.isnull().sum())
+    # print(df_3.head())
 
-    return ddf3
+    return df_3
 
 
 def convert_rooms(df_1):
@@ -28,9 +28,7 @@ def convert_rooms(df_1):
         df_1['number_of_rooms'] = df_1['size'].apply(lambda x: int(x.split(' ')[0]))
     except:
         pass
-
     # print(df_1['number_of_rooms'].unique())
-
     return df_1
 
 
@@ -77,14 +75,36 @@ def simplify_location(df_1):
     return df_1
 
 
+def remove_pps_outliers(df_1):
+    # finding mean and standard deviation for each location
+    # and filtering points that are beyond one standard deviation
+    df_2 = pd.DataFrame()
+
+    for key, subdf in df_1.groupby('location'):
+        mean = np.mean(subdf.price_per_sqft)
+        standard = np.std(subdf.price_per_sqft)
+
+        # don't know how this works
+        # keeping everything below and above mean+-standard and appending those dataframes per location
+        reduced_df = subdf[(subdf.price_per_sqft > (mean - standard)) & (subdf.price_per_sqft <= (mean + standard))]
+        df_2 = pd.concat([df_2, reduced_df], ignore_index=True)
+
+    return df_2
+
+
 def outlier_removal(df_1):
     # average bedroom size is 312 sqft in Bengaluru (-50 for the margin of error)
     # https://www.crddesignbuild.com/blog/average-bedroom-size
     # print(df_1[(df_1.total_sqft / df_1.number_of_rooms < 312 - 50)].head().to_string())
     # print(df_1.shape)
+
     df_2 = df_1[~(df_1.total_sqft / df_1.number_of_rooms < 312 - 50)]
     # print(df_2.shape)
 
+    print(df_2.price_per_sqft.describe())
+
+    df_3 = remove_pps_outliers(df_2)
+    return df_3
 
 
 if __name__ == '__main__':
@@ -120,4 +140,6 @@ if __name__ == '__main__':
     df6 = simplify_location(df5)
     # print(df6.head(10))
 
-    outlier_removal(df6)
+    print(df6.shape)
+    df7 = outlier_removal(df6)
+    print(df7.shape)
