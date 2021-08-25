@@ -86,8 +86,8 @@ def remove_pps_outliers(df_1):
 
         # don't know how this works
         # keeping everything below and above mean+-standard and appending those dataframes per location
-        reduced_df = subdf[(subdf.price_per_sqft > (mean - standard)) & (subdf.price_per_sqft <= (mean + standard))]
-        df_2 = pd.concat([df_2, reduced_df], ignore_index=True)
+        df_3 = subdf[(subdf.price_per_sqft > (mean - standard)) & (subdf.price_per_sqft <= (mean + standard))]
+        df_2 = pd.concat([df_2, df_3], ignore_index=True)
 
     return df_2
 
