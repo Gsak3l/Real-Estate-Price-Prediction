@@ -77,6 +77,16 @@ def simplify_location(df_1):
     return df_1
 
 
+def outlier_removal(df_1):
+    # average bedroom size is 312 sqft in Bengaluru (-50 for the margin of error)
+    # https://www.crddesignbuild.com/blog/average-bedroom-size
+    # print(df_1[(df_1.total_sqft / df_1.number_of_rooms < 312 - 50)].head().to_string())
+    # print(df_1.shape)
+    df_2 = df_1[~(df_1.total_sqft / df_1.number_of_rooms < 312 - 50)]
+    # print(df_2.shape)
+
+
+
 if __name__ == '__main__':
     matplotlib.rcParams['figure.figsize'] = (20, 10)
 
@@ -108,4 +118,6 @@ if __name__ == '__main__':
     # print(df5.head(4))
 
     df6 = simplify_location(df5)
-    print(df6.head(10))
+    # print(df6.head(10))
+
+    outlier_removal(df6)
