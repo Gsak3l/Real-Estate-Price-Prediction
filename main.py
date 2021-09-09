@@ -25,10 +25,10 @@ def clean_dataframe(df_1):
 def convert_rooms(df_1):
     # converting different types of rooms into one
     try:
-        df_1['number_of_rooms'] = df_1['size'].apply(lambda x: int(x.split(' ')[0]))
+        df_1['bhk'] = df_1['size'].apply(lambda x: int(x.split(' ')[0]))
     except:
         pass
-    # print(df_1['number_of_rooms'].unique())
+    # print(df_1['bhk'].unique())
     return df_1
 
 
@@ -95,16 +95,29 @@ def remove_pps_outliers(df_1):
 def outlier_removal(df_1):
     # average bedroom size is 312 sqft in Bengaluru (-50 for the margin of error)
     # https://www.crddesignbuild.com/blog/average-bedroom-size
-    # print(df_1[(df_1.total_sqft / df_1.number_of_rooms < 312 - 50)].head().to_string())
+    # print(df_1[(df_1.total_sqft / df_1.bhk < 312 - 50)].head().to_string())
     # print(df_1.shape)
 
-    df_2 = df_1[~(df_1.total_sqft / df_1.number_of_rooms < 312 - 50)]
+    df_2 = df_1[~(df_1.total_sqft / df_1.bhk < 312 - 50)]
     # print(df_2.shape)
 
     print(df_2.price_per_sqft.describe())
 
     df_3 = remove_pps_outliers(df_2)
     return df_3
+
+
+# drawing a scatter plot for two and three bedroom apartments
+def plot_scatter_chart(df_1, location):
+    bhk2 = df_1[(df_1.location == location) & (df_1.bhk == 2)]
+    bhk3 = df_1[(df_1.location == location) & (df_1.bhk == 3)]
+    matplotlib.rcParams['figure.figsize'] = (15, 10)
+    plt.scatter(bhk2.total_sqft, bhk2.price_per_sqft, color='blue', label='2 BHK', s=50)
+    plt.scatter(bhk3.total_sqft, bhk3.price_per_sqft, marker='+', color='green', label='3 BHK', s=50)
+    plt.xlabel("Total Square Feet Area")
+    plt.ylabel("Price Per Square Feet")
+    plt.title(location)
+    plt.legend()
 
 
 if __name__ == '__main__':
@@ -120,7 +133,7 @@ if __name__ == '__main__':
     df3 = convert_rooms(df3)
 
     # there is at least an error with the number of rooms here, considering the square feet
-    # print(df3[df3.number_of_rooms > 20])
+    # print(df3[df3.bhk > 20])
     # print(df3.total_sqft.unique())
 
     # there are a few sqr_feet that have a range (example 150-200)
@@ -142,4 +155,6 @@ if __name__ == '__main__':
 
     print(df6.shape)
     df7 = outlier_removal(df6)
-    print(df7.shape)
+    # print(df7.shape)
+
+    plot_scatter_chart(df7, 'Rajaji Nagar')
