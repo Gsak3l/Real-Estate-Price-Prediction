@@ -126,6 +126,7 @@ def remove_bhk_outliers(df_1):
     exclude_indices = np.array([])
     for location, location_df in df_1.groupby('location'):
         bhk_stats = {}
+
         for bhk, bhk_df in location_df.groupby('bhk'):
             # computing per dataframe mean, std, count
             bhk_stats[bhk] = {
@@ -133,11 +134,13 @@ def remove_bhk_outliers(df_1):
                 'std': np.std(bhk_df.price_per_sqft),
                 'count': bhk_df.shape[0]
             }
+
         for bhk, bhk_df in location_df.groupby('bhk'):
             stats = bhk_stats.get(bhk)
             if stats and stats['count'] > 5:
                 exclude_indices = np.append(exclude_indices,
                                             bhk_df[bhk_df.price_per_sqft < (stats['mean'])].index.values)
+
     return df_1.drop(exclude_indices, axis='index')
 
 
