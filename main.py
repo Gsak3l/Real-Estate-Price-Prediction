@@ -120,6 +120,27 @@ def plot_scatter_chart(df_1, location):
     plt.legend()
 
 
+# removing houses that have less bedrooms than the mean and higher price
+# example: a house that has 1 bedroom cannot be more expensive than a house with 3
+def remove_bhk_outliers(df_1):
+    exclude_indices = np.array([])
+    for location, location_df in df_1.groupby('location'):
+        bhk_stats = {}
+        for bhk, bhk_df in location_df.groupby('bhk'):
+            # computing per dataframe mean, std, count
+            bhk_stats[bhk] = {
+                'mean': np.mean(bhk_df.price_per_sqft),
+                'std': np.std(bhk_df.price_per_sqft),
+                'count': bhk_df.shape[0]
+            }
+        for bhk, bhk_df in location_df.groupby('bhk'):
+            stats = bhk_stats.get(bhk)
+            if stats and stats['count'] > 5:
+                exclude_indices = np.append(exclude_indices,
+                                            bhk_df[bhk_df.price_per_sqft < (stats['mean'])].index.values)
+    return df_1.drop(exclude_indices, axis='index')
+
+
 if __name__ == '__main__':
     matplotlib.rcParams['figure.figsize'] = (20, 10)
 
@@ -158,3 +179,7 @@ if __name__ == '__main__':
     # print(df7.shape)
 
     plot_scatter_chart(df7, 'Rajaji Nagar')
+
+    print(df7.shape)
+    df8 = remove_bhk_outliers(df7)
+    print(df8.shape)
