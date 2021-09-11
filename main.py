@@ -101,7 +101,7 @@ def outlier_removal(df_1):
     df_2 = df_1[~(df_1.total_sqft / df_1.bhk < 312 - 50)]
     # print(df_2.shape)
 
-    print(df_2.price_per_sqft.describe())
+    # print(df_2.price_per_sqft.describe())
 
     df_3 = remove_pps_outliers(df_2)
     return df_3
@@ -118,6 +118,8 @@ def plot_scatter_chart(df_1, location):
     plt.ylabel("Price Per Square Feet")
     plt.title(location)
     plt.legend()
+    # plt.show()
+    plt.clf()  # clearing the plot for future use
 
 
 # removing houses that have less bedrooms than the mean and higher price
@@ -142,6 +144,22 @@ def remove_bhk_outliers(df_1):
                                             bhk_df[bhk_df.price_per_sqft < (stats['mean'])].index.values)
 
     return df_1.drop(exclude_indices, axis='index')
+
+
+def remove_bathroom_outliers(df_1):
+    # print(df8.bath.unique())
+    # print(df8[df8.bath > 10])
+
+    plt.hist(df_1.bath, rwidth=0.8)
+    plt.xlabel('Number of Bathrooms')
+    plt.ylabel('Count')
+    # plt.show()
+    plt.clf()
+
+    # print(df_1[df_1.bath > df_1.bhk + 2])
+    df_2 = df_1[df_1.bath < df_1.bhk + 2]
+
+    return df_2
 
 
 if __name__ == '__main__':
@@ -177,12 +195,24 @@ if __name__ == '__main__':
     df6 = simplify_location(df5)
     # print(df6.head(10))
 
-    print(df6.shape)
+    # print(df6.shape)
     df7 = outlier_removal(df6)
     # print(df7.shape)
 
     plot_scatter_chart(df7, 'Rajaji Nagar')
 
-    print(df7.shape)
     df8 = remove_bhk_outliers(df7)
+    # print(df8.shape)
+
+    # plot_scatter_chart(df8, 'Hebbal')
+
+    matplotlib.rcParams['figure.figsize'] = (20, 10)
+    plt.hist(df8.price_per_sqft, rwidth=0.8)
+    plt.xlabel('Price per Square Feet')
+    plt.ylabel('Count')
+    # plt.show()
+    plt.clf()
+
     print(df8.shape)
+    df9 = remove_bathroom_outliers(df8)
+    print(df9.shape)
