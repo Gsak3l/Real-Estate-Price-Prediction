@@ -4,6 +4,7 @@ import numpy as np
 import matplotlib
 
 import data_clean as dc
+import training
 
 if __name__ == '__main__':
     matplotlib.rcParams['figure.figsize'] = (20, 10)
@@ -62,4 +63,7 @@ if __name__ == '__main__':
     # size = bhk
     # price_per_sqft does not seem important from this point and forward, not sure tho
     df10 = df9.drop(['size', 'price_per_sqft'], axis='columns')
-    print(df10.head(3))
+    # print(df10.head(3))
+
+    X, y = training.create_training_data(df10)
+    print(X.head(), y.head())
