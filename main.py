@@ -65,6 +65,6 @@ if __name__ == '__main__':
     df10 = df9.drop(['size', 'price_per_sqft'], axis='columns')
     # print(df10.head(3))
 
-    X, y = training.create_training_data(df10)
-    print(X.head(), y.head())
+    training.create_training_data(df10)
+
 
