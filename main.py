@@ -67,3 +67,4 @@ if __name__ == '__main__':
 
     X, y = training.create_training_data(df10)
     print(X.head(), y.head())
+
