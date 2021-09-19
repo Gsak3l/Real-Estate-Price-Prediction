@@ -1,4 +1,5 @@
 import pandas as pd
+import numpy as np
 
 from sklearn.model_selection import train_test_split, ShuffleSplit, cross_val_score, GridSearchCV
 from sklearn.linear_model import LinearRegression, Lasso
@@ -20,6 +21,7 @@ def create_training_data(df_1):
     # print(y.head())
 
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=10)
+
     return X, y, X_train, X_test, y_train, y_test
 
 
@@ -29,7 +31,7 @@ def get_train_score(X_train, X_test, y_train, y_test):
     lr_clf.fit(X_train, y_train)
     lr_clf_result = lr_clf.score(X_test, y_test)
 
-    return lr_clf_result
+    return lr_clf, lr_clf_result
 
 
 def get_cross_validation(X, y):
@@ -77,3 +79,19 @@ def find_best_model(X, y):
         })
 
     return pd.DataFrame(scores, columns=['model', 'best_score', 'best_params'])
+
+
+def predict_price(X, y, location, sqft, bath, bhk, lr_clf):
+    # print(X.columns)
+    # print(np.where(X.columns == location)[0][0])
+    loc_index = np.where(X.columns == location)[0][0]
+
+    x = np.zeros(len(X.columns))
+    x[0] = sqft
+    x[1] = bath
+    x[2] = bhk
+
+    if loc_index >= 0:
+        x[loc_index] = 1
+
+    return lr_clf.predict([x])[0]

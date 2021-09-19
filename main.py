@@ -71,11 +71,14 @@ if __name__ == '__main__':
     X, y, X_train, X_test, y_train, y_test = training.create_training_data(df10)
     # print(X, y, X_train, X_test, y_train, y_test)
 
-    lr_clf_result = training.get_train_score(X_train, X_test, y_train, y_test)
+    lr_clf, lr_clf_result = training.get_train_score(X_train, X_test, y_train, y_test)
     # print(lr_clf_result)
 
     cross_validation_score = training.get_cross_validation(X, y)
     # print(cross_validation_score)
 
     # Linear Regression model seems to be the best one out of the three due to higher score
-    print(training.find_best_model(X, y))
+    training.find_best_model(X, y)
+
+    print(training.predict_price(X, y, '1st Phase JP Nagar', 1000, 2, 2, lr_clf))
+    print(training.predict_price(X, y, '1st Phase JP Nagar', 1000, 4, 3, lr_clf))
