@@ -9,6 +9,9 @@ import training
 if __name__ == '__main__':
     matplotlib.rcParams['figure.figsize'] = (20, 10)
 
+    desired_width = 320
+    pd.set_option('display.width', desired_width)
+
     # getting to know the dataframe a bit more
     df1 = pd.read_csv('./data/Bengaluru_House_Data.csv')
     # print(df1.shape)
@@ -65,6 +68,14 @@ if __name__ == '__main__':
     df10 = df9.drop(['size', 'price_per_sqft'], axis='columns')
     # print(df10.head(3))
 
-    training.create_training_data(df10)
+    X, y, X_train, X_test, y_train, y_test = training.create_training_data(df10)
+    # print(X, y, X_train, X_test, y_train, y_test)
 
+    lr_clf_result = training.get_train_score(X_train, X_test, y_train, y_test)
+    # print(lr_clf_result)
 
+    cross_validation_score = training.get_cross_validation(X, y)
+    # print(cross_validation_score)
+
+    # Linear Regression model seems to be the best one out of the three due to higher score
+    print(training.find_best_model(X, y))
